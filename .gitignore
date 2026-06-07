@@ -1,0 +1,9 @@
+# kramdown-rfc / xml2rfc build artifacts
+*.txt
+!draft-*-00.txt
+*.html
+*.pdf
+build/
+.refcache/
+*~
+.DS_Store

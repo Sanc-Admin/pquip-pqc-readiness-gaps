@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you reference this work, please cite as below."
+type: report
+title: "Gaps in Operational Visibility for Post-Quantum Cryptographic Readiness in Networked Computing Environments"
+authors:
+  - family-names: Vicente
+    given-names: Brian
+    affiliation: Sanctum SecOps LLC
+    email: bvicente@sanctumsecops.com
+    orcid: "https://orcid.org/0009-0006-6395-5308"
+    address: "Pine City, NY, USA"
+date-released: 2026-06-05
+url: "https://datatracker.ietf.org/doc/draft-vicente-pquip-pqc-readiness-gaps/"
+repository-code: "https://github.com/Sanc-Admin/pquip-pqc-readiness-gaps"
+keywords:
+  - post-quantum cryptography
+  - PQC
+  - PKI
+  - IETF
+  - Internet-Draft
+license: CC-BY-4.0
