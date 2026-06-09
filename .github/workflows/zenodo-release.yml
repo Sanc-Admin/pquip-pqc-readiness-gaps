@@ -1,0 +1,25 @@
+name: Zenodo Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  zenodo-archive:
+    name: Verify Zenodo metadata on tag push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify .zenodo.json
+        run: |
+          [ -f .zenodo.json ] || (echo "ERROR: .zenodo.json missing" && exit 1)
+          python3 -m json.tool .zenodo.json > /dev/null && echo "PASS: valid JSON"
+
+      - name: Verify CITATION.cff
+        run: |
+          [ -f CITATION.cff ] && echo "PASS: CITATION.cff present" || echo "WARN: CITATION.cff missing"
+
+      - name: Tag summary
+        run: echo "Tag ${GITHUB_REF_NAME} — verify Zenodo at https://zenodo.org/search?q=${GITHUB_REPOSITORY##*/}"

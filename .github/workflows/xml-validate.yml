@@ -1,0 +1,51 @@
+name: Validate IETF Draft XML/MD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.xml'
+      - '**.md'
+      
+  pull_request:
+    branches: [main]
+
+jobs:
+  xml2rfc-validate:
+    name: xml2rfc lint and validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install xml2rfc
+        run: pip install xml2rfc
+
+      - name: Validate all XML drafts
+        run: |
+          shopt -s nullglob
+          xmlfiles=($(find . -name 'draft-*.xml' -not -path './.git/*'))
+          if [ ${#xmlfiles[@]} -eq 0 ]; then
+            echo "No draft XML files found — skipping"
+            exit 0
+          fi
+          for f in "${xmlfiles[@]}"; do
+            echo "Validating $f..."
+            xml2rfc --quiet --no-network "$f" --text --out /dev/null
+          done
+
+      - name: Check patent refs
+        run: |
+          for f in $(find . -name 'draft-*.xml' -not -path './.git/*'); do
+            grep -q "19/698,870\|64/080,137" "$f" && echo "PASS: Patent refs in $f" || echo "WARN: Patent refs missing from $f"
+          done
+
+      - name: Verify ORCID
+        run: |
+          for f in $(find . -name 'draft-*.xml' -not -path './.git/*'); do
+            grep -q "0009-0006-6395-5308" "$f" && echo "PASS: ORCID in $f" || echo "WARN: ORCID missing from $f"
+          done
