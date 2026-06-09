@@ -54,7 +54,7 @@ jobs:
 
       - name: Open issue on threat
         if: steps.sweep.outputs.threats_found == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
