@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude"
      category="info"
-     docName="draft-vicente-pquip\-pqc\-readiness\-gaps-03"
+     docName="draft-vicente-pquip-pqc-readiness-gaps-03"
      ipr="trust200902"
      submissionType="independent"
      xml:lang="en"
@@ -10,7 +10,7 @@
   <front>
     <title abbrev="PQC Readiness Observability Gaps">Gaps in Operational Visibility for Post-Quantum Cryptographic Readiness in Networked Computing Environments</title>
 
-    <seriesInfo name="Internet-Draft" value="draft-vicente-pquip\-pqc\-readiness\-gaps-03"/>
+    <seriesInfo name="Internet-Draft" value="draft-vicente-pquip-pqc-readiness-gaps-03"/>
 
     <author initials="B." surname="Vicente" fullname="Brian Vicente">
       <organization>Sanctum SecOps LLC</organization>
@@ -25,7 +25,7 @@
       </address>
     </author>
 
-    <date year="2026" month="June" day="8"/>
+    <date year="2026" month="June" day="26"/>
 
     <area>Security</area>
     <workgroup>Post-Quantum Use In Protocols</workgroup>
