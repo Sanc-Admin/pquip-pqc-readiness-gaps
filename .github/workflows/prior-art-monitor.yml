@@ -5,15 +5,19 @@ on:
     - cron: '22 4,10,16,22 * * *'
   workflow_dispatch:
 
+permissions:
+  issues: write
+  contents: read
+
 jobs:
   datatracker-sweep:
     name: IETF Datatracker prior-art sweep
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -54,7 +58,7 @@ jobs:
 
       - name: Open issue on threat
         if: steps.sweep.outputs.threats_found == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
