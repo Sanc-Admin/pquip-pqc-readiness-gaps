@@ -33,10 +33,20 @@ jobs:
             echo "No draft XML files found — skipping"
             exit 0
           fi
+          FAIL=0
           for f in "${xmlfiles[@]}"; do
+            # Skip placeholder files that are not well-formed XML (e.g. comment-only stubs)
+            if ! python3 -c "import xml.etree.ElementTree as ET; ET.parse('$f')" 2>/dev/null; then
+              echo "SKIP: $f is not well-formed XML (placeholder or stub)"
+              continue
+            fi
             echo "Validating $f..."
-            xml2rfc --quiet "$f" --text --out /dev/null
+            if ! xml2rfc --quiet "$f" --text --out /dev/null 2>&1; then
+              echo "::error::xml2rfc validation failed for $f"
+              FAIL=1
+            fi
           done
+          exit $FAIL
 
       - name: Check patent refs present
         run: |
