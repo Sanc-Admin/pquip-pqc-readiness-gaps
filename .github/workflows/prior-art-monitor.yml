@@ -12,7 +12,7 @@ permissions:
 jobs:
   datatracker-sweep:
     name: IETF Datatracker prior-art sweep
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, ARM64]
     steps:
       - uses: actions/checkout@v4
 
