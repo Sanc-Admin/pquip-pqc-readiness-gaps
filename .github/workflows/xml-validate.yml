@@ -13,7 +13,7 @@ on:
 jobs:
   xml2rfc-validate:
     name: xml2rfc lint and validate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, ARM64]
     steps:
       - uses: actions/checkout@v4
 
