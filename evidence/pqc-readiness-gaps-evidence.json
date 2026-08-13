@@ -1,0 +1,60 @@
+{
+  "_schema": "sanctum-evidence-v1",
+  "_generated": "2026-08-12T20:42:00Z",
+  "_author": "Brian Vicente <bvicente@sanctumsecops.com>",
+  "_orcid": "https://orcid.org/0009-0006-6395-5308",
+  "_organization": "Sanctum SecOps LLC",
+  "_ipr_notice": "Sanctum SecOps LLC / Brian Vicente may hold or intend to file IP rights covering subject matter herein. Published under BCP 78/79. No license granted by publication.",
+  "draft_series": "draft-vicente-pquip-pqc-readiness-gaps",
+  "current_revision": "-03",
+  "github_repo": "https://github.com/Sanc-Admin/pquip-pqc-readiness-gaps",
+  "gaps": [
+    {
+      "id": "gap-1",
+      "title": "No Structured Algorithm Negotiation Export from TLS",
+      "evidence": [
+        {"source": "RFC8446", "section": "4.1.2", "quote": "The client offers its set of supported cipher suites in the ClientHello.", "relevance": "TLS 1.3 negotiates algorithms in handshake but no export mechanism is defined."}
+      ]
+    },
+    {
+      "id": "gap-2",
+      "title": "No DNSSEC Algorithm Inventory Export",
+      "evidence": [
+        {"source": "RFC4034", "section": "2.1", "quote": "The DNSKEY resource record stores a public key.", "relevance": "DNSKEY carries algorithm ID per zone but no resolver aggregation/export standard exists."}
+      ]
+    },
+    {
+      "id": "gap-3",
+      "title": "No Certificate Algorithm Inventory in OCSP/CRL",
+      "evidence": [
+        {"source": "RFC6960", "section": "2.1", "quote": "The OCSP client issues a request to an OCSP server and suspends acceptance of the certificate until the server provides a response.", "relevance": "OCSP carries revocation status, not algorithm family inventory."}
+      ]
+    },
+    {
+      "id": "gap-4",
+      "title": "No PQC Readiness Signal in QUIC Transport",
+      "evidence": [
+        {"source": "RFC9000", "section": "7", "quote": "QUIC uses TLS 1.3 for connection establishment.", "relevance": "QUIC inherits TLS gap-1 plus adds header encryption reducing passive observability."}
+      ]
+    },
+    {
+      "id": "gap-5",
+      "title": "No Aggregated Readiness State Export Protocol",
+      "evidence": [
+        {"source": "general", "relevance": "No IETF-standard protocol aggregates per-session Algorithm Negotiation Records into environment-level PQC Readiness State. CBOM addresses software inventory, not network-layer aggregation."}
+      ]
+    }
+  ],
+  "cbom_differentiation": {
+    "cbom_scope": "Software composition and supply-chain cryptographic library inventory at build/install time",
+    "this_document_scope": "Network-layer observability gaps: missing signals at session/protocol negotiation time",
+    "complementarity": "REQ-RG-5 requires interoperability with CBOM, not replacement of it"
+  },
+  "requirements": [
+    {"id": "REQ-RG-1", "title": "TLS Algorithm Negotiation Export", "gap": "gap-1"},
+    {"id": "REQ-RG-2", "title": "DNSSEC Algorithm Inventory Export", "gap": "gap-2"},
+    {"id": "REQ-RG-3", "title": "OCSP/CRL Algorithm Inventory Export", "gap": "gap-3"},
+    {"id": "REQ-RG-4", "title": "Aggregated Readiness State Data Model", "gap": "gap-5"},
+    {"id": "REQ-RG-5", "title": "CBOM Interoperability", "gap": "gap-5"}
+  ]
+}
