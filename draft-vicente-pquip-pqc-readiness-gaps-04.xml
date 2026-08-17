@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc [
+  <!ENTITY nbsp "&#160;">
+]>
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude"
+     category="info"
+     docName="draft-vicente-pquip-pqc-readiness-gaps-04"
+     ipr="trust200902"
+     submissionType="IETF"
+     xml:lang="en"
+     version="3">
+
+  <front>
+    <title abbrev="PQC Readiness Gaps">PQC Readiness Observability Gaps in Networked Computing Environments</title>
+    <seriesInfo name="Internet-Draft" value="draft-vicente-pquip-pqc-readiness-gaps-04"/>
+
+    <author initials="B." surname="Vicente" fullname="Brian Vicente">
+      <organization>Sanctum SecOps LLC</organization>
+      <address>
+        <postal><city>Pine City</city><region>NY</region><country>United States of America</country></postal>
+        <email>brian@sso-labs.com</email>
+        <uri>https://orcid.org/0009-0006-6395-5308</uri>
+      </address>
+    </author>
+
+    <date year="2026" month="August" day="16"/>
+    <area>Security</area>
+    <workgroup>PQUIP</workgroup>
+    <keyword>post-quantum</keyword>
+    <keyword>PQC readiness</keyword>
+    <keyword>observability</keyword>
+    <keyword>crypto inventory</keyword>
+    <keyword>algorithm agility</keyword>
+    <keyword>CBOM</keyword>
+
+    <abstract>
+      <t>
+        This document identifies observability gaps that prevent network operators and
+        security teams from determining the post-quantum cryptography (PQC) readiness
+        state of networked computing environments. PQC readiness requires knowing which
+        cryptographic algorithms are in use across the environment, which are vulnerable
+        to quantum attack, and which have been or are being migrated to NIST-approved
+        PQC algorithms. Current network protocols and management frameworks do not
+        provide sufficient visibility to answer these questions at scale.
+      </t>
+      <t>
+        This revision (-03) adds a Posture B IPR notice, differentiates from adjacent
+        Cryptography Bill of Materials (CBOM) work, and adds machine-readable JSON
+        evidence. The gaps identified in this document are observability gaps — the
+        absence of machine-readable, network-layer signals that enable automated
+        PQC readiness assessment. This differs from CBOM, which focuses on software
+        composition and supply-chain inventory.
+      </t>
+    </abstract>
+
+    <note title="Source and Archival" removeInRFC="true">
+      <t>
+        Source maintained at
+        <eref target="https://github.com/Sanc-Admin/pquip-pqc-readiness-gaps">https://github.com/Sanc-Admin/pquip-pqc-readiness-gaps</eref>.
+        Author ORCID iD: <eref target="https://orcid.org/0009-0006-6395-5308">https://orcid.org/0009-0006-6395-5308</eref>.
+      </t>
+    </note>
+
+    <note title="IPR Considerations" removeInRFC="true">
+      <t>
+        Sanctum IP Co (a Delaware corporation, assignee of Sanctum SecOps LLC) holds or
+        intends to file patent or other intellectual property rights covering subject matter described in this document,
+        including the PQC readiness observability gap taxonomy, the network-layer
+        readiness signal model, and the automated readiness assessment framework.
+        The public disclosure of this Internet-Draft constitutes prior art as of its
+        submission date with respect to the specific combination of features described
+        herein. By posting this Internet-Draft, the author submits to the IETF Trust
+        the rights described in BCP 78 and BCP 79. Implementers MUST consult the IETF
+        Datatracker IPR page for this document before implementation.
+      </t>
+          <t>
+        All intellectual property described in this document is owned by
+        Sanctum IP Co, 128 Dry Run Rd, Pine City, NY 14871.
+        Contact: brian@sso-labs.com.
+      </t>
+</note>
+
+  </front>
+
+  <middle>
+
+    <section anchor="introduction" numbered="true">
+      <name>Introduction</name>
+
+      <section anchor="motivation" numbered="true">
+        <name>Motivation</name>
+        <t>
+          Preparing a networked computing environment for the post-quantum era requires
+          operators to know: which cryptographic algorithms are currently in use across
+          all network endpoints, services, and protocols; which of those algorithms are
+          vulnerable to attacks by a Cryptographically Relevant Quantum Computer (CRQC)
+          using Shor's algorithm <xref target="SHOR1994"/>; and which have been or are
+          actively being migrated to NIST-approved PQC algorithms (FIPS 204, FIPS 205).
+        </t>
+        <t>
+          Current network protocols — TLS <xref target="RFC8446"/>, QUIC <xref target="RFC9000"/>,
+          SSH, DNSSEC — do not provide machine-readable, network-layer signals that
+          enable automated aggregation of cryptographic algorithm usage across an
+          environment. SNMP MIBs, NetFlow/IPFIX, and syslog carry no structured
+          cryptographic algorithm inventory. This creates five distinct observability
+          gaps that prevent automated PQC readiness assessment at scale.
+        </t>
+      </section>
+
+      <section anchor="cbom-differentiation" numbered="true">
+        <name>Differentiation from CBOM and Software Inventory Approaches</name>
+        <t>
+          Cryptography Bill of Materials (CBOM) work — as developed in the context of
+          software supply chain security and SBOM frameworks — addresses the inventory
+          of cryptographic libraries and algorithms as software components within
+          application and OS stacks. CBOM answers: "which cryptographic libraries does
+          this software use?"
+        </t>
+        <t>
+          This document addresses a distinct and complementary problem: the absence of
+          <em>network-layer</em> observability signals that would allow a network security
+          monitor to determine, from traffic analysis and protocol metadata alone, which
+          cryptographic algorithms are in active use across live network sessions —
+          regardless of what the software stack reports. Network-layer observability
+          gaps persist even when CBOM is fully deployed, because:
+        </t>
+        <ol spacing="normal">
+          <li>CBOM reflects software composition at build/install time; network-layer
+          signals reflect algorithm use at session time.</li>
+          <li>CBOM cannot detect algorithm downgrade attacks or negotiation outcomes
+          that differ from the declared software capability.</li>
+          <li>CBOM requires agent deployment on endpoints; network-layer observability
+          can be achieved passively via traffic analysis without endpoint agents.</li>
+        </ol>
+      </section>
+
+    </section>
+
+    <section anchor="conventions" numbered="true">
+      <name>Conventions and Definitions</name>
+      <t>
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+        "OPTIONAL" in this document are to be interpreted as described in
+        BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/>.
+      </t>
+      <dl newline="true" spacing="normal">
+        <dt>PQC Readiness State:</dt>
+        <dd>The assessed condition of a network environment with respect to its
+        preparedness to operate securely in the presence of a CRQC, determined
+        by the current distribution of classical vs. PQC algorithm usage across
+        active network sessions.</dd>
+
+        <dt>Network-Layer Readiness Signal:</dt>
+        <dd>A machine-readable signal extractable from network traffic or
+        protocol metadata — without endpoint agent access — that contributes
+        to determining the PQC Readiness State of a session, endpoint, or
+        service.</dd>
+
+        <dt>Algorithm Negotiation Record:</dt>
+        <dd>A structured log record capturing the cryptographic algorithm
+        negotiated in a specific protocol session (e.g., TLS cipher suite,
+        SSH key exchange method, DNSSEC algorithm).</dd>
+
+        <dt>Readiness Gap:</dt>
+        <dd>An absence of a normative mechanism for generating, transmitting,
+        or aggregating a Network-Layer Readiness Signal that would contribute
+        to PQC Readiness State assessment.</dd>
+      </dl>
+    </section>
+
+    <section anchor="gaps" numbered="true">
+      <name>Identified Readiness Gaps</name>
+
+      <section anchor="gap-1" numbered="true">
+        <name>Gap 1: No Structured Algorithm Negotiation Export from TLS</name>
+        <t>
+          TLS 1.3 <xref target="RFC8446"/> negotiates cipher suites and key exchange
+          groups via ClientHello/ServerHello. The negotiated algorithms are observable
+          in the TLS handshake but:
+        </t>
+        <ol spacing="normal">
+          <li>No IETF-standard mechanism exports structured Algorithm Negotiation
+          Records from TLS implementations to a network management system.</li>
+          <li>IPFIX/NetFlow record types do not include TLS cipher suite as a
+          standard information element available in all major implementations.</li>
+          <li>Passive TLS inspection (where legally permissible) requires
+          decryption or relies on handshake metadata only — which is
+          increasingly encrypted in TLS 1.3 via ECH.</li>
+        </ol>
+      </section>
+
+      <section anchor="gap-2" numbered="true">
+        <name>Gap 2: No DNSSEC Algorithm Inventory Export</name>
+        <t>
+          DNSSEC <xref target="RFC4034"/> zone signing uses algorithm identifiers
+          (RSA/SHA-256, ECDSA P-256/SHA-256, etc.) recorded in DNSKEY and RRSIG
+          records. No standard mechanism aggregates DNSSEC algorithm usage across
+          zones in a resolver's cache into a machine-readable inventory exportable
+          to a network management system.
+        </t>
+      </section>
+
+      <section anchor="gap-3" numbered="true">
+        <name>Gap 3: No Certificate Algorithm Inventory in OCSP/CRL Infrastructure</name>
+        <t>
+          OCSP <xref target="RFC6960"/> responses and CRL <xref target="RFC5280"/> distributions
+          carry certificate revocation status but do not carry structured information
+          about the algorithm family of the certificate being checked. No IETF-standard
+          mechanism aggregates certificate algorithm distribution across an OCSP/CRL
+          infrastructure into a readiness inventory.
+        </t>
+      </section>
+
+      <section anchor="gap-4" numbered="true">
+        <name>Gap 4: No PQC Readiness Signal in QUIC Transport</name>
+        <t>
+          QUIC <xref target="RFC9000"/> uses TLS 1.3 for its cryptographic handshake.
+          The same Gap 1 issues apply to QUIC sessions. Additionally, QUIC's
+          encrypted header format further reduces the visibility of handshake
+          metadata to passive monitors.
+        </t>
+      </section>
+
+      <section anchor="gap-5" numbered="true">
+        <name>Gap 5: No Aggregated Readiness State Export Protocol</name>
+        <t>
+          Even if individual gaps 1-4 were addressed by adding algorithm-negotiation
+          export to each protocol, no IETF-standard aggregation protocol exists for
+          collecting per-session Algorithm Negotiation Records across protocols,
+          computing a PQC Readiness State for an environment, and exporting that
+          state to a security operations platform in a structured, machine-readable
+          format.
+        </t>
+      </section>
+
+    </section>
+
+    <section anchor="requirements" numbered="true">
+      <name>Requirements for Closing the Gaps</name>
+
+      <t><strong>REQ-RG-1:</strong> A normative mechanism SHOULD be defined for TLS
+      implementations to export structured Algorithm Negotiation Records to a
+      local collector without requiring decryption of session content.</t>
+
+      <t><strong>REQ-RG-2:</strong> DNSSEC resolvers SHOULD export per-zone algorithm
+      usage records in a structured format to enable environment-wide DNSSEC
+      algorithm inventory.</t>
+
+      <t><strong>REQ-RG-3:</strong> OCSP and CRL infrastructure SHOULD record and
+      export the algorithm family of certificates for which status is checked,
+      enabling a CA to monitor the classical-vs-PQC distribution of its
+      actively-checked certificate population.</t>
+
+      <t><strong>REQ-RG-4:</strong> A structured PQC Readiness State data model SHOULD
+      be defined that aggregates per-session Algorithm Negotiation Records into
+      an environment-level readiness score or distribution, exportable via an
+      IETF-standard protocol (e.g., YANG/NETCONF, IPFIX extension).</t>
+
+      <t><strong>REQ-RG-5:</strong> The aggregated PQC Readiness State data model MUST
+      be complementary to and interoperable with CBOM outputs, not duplicative
+      of them. Implementers SHOULD combine CBOM software inventory with
+      network-layer Algorithm Negotiation Records for complete readiness coverage.</t>
+
+    </section>
+
+    <section anchor="security" numbered="true">
+      <name>Security Considerations</name>
+      <t>
+        Algorithm Negotiation Records may reveal information about the cryptographic
+        capabilities of endpoints in a network. Aggregated readiness inventories MUST
+        be protected as sensitive security metadata. Access to readiness state exports
+        MUST be restricted to authorized security operations personnel. Exporters MUST
+        NOT include session content or key material in Algorithm Negotiation Records.
+      </t>
+    </section>
+
+    <section anchor="iana" numbered="true">
+      <name>IANA Considerations</name>
+      <t>This document has no IANA actions. Future documents closing the identified
+      gaps may require IANA registrations for IPFIX information elements, YANG
+      module names, or algorithm identifier registries.</t>
+    </section>
+
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
+    </references>
+    <references title="Informative References">
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4034.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6960.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8446.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9000.xml"/>
+      <reference anchor="SHOR1994">
+        <front>
+          <title>Algorithms for quantum computation: discrete logarithms and factoring</title>
+          <author initials="P." surname="Shor" fullname="Peter W. Shor"/>
+          <date year="1994"/>
+        </front>
+        <seriesInfo name="Proceedings of the 35th Annual Symposium on Foundations of Computer Science" value="pp. 124-134"/>
+      </reference>
+      <reference anchor="FIPS204">
+        <front><title>Module-Lattice-Based Digital Signature Standard</title>
+        <author><organization>NIST</organization></author>
+        <date year="2024" month="August"/></front>
+        <seriesInfo name="FIPS" value="204"/>
+      </reference>
+    </references>
+  </back>
+
+</rfc>
