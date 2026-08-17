@@ -53,7 +53,19 @@
       </t>
     </abstract>
 
-    <note title="Source and Archival" removeInRFC="true">
+        <note title="Supplementary Materials" removeInRFC="true">
+      <t>
+        Reference implementation: CygnetLib
+        (<eref target="https://github.com/sanctumsecopsmssp/CygnetLib">https://github.com/sanctumsecopsmssp/CygnetLib</eref>).
+        JSON evidence: algorithm registry, CNSA 2.0 compliance matrix, IETF PQC
+        interoperability status, and ACTV test vectors are in the
+        <tt>evidence/</tt> directory.
+        CAGE/NCAGE: 20XS3. Apex website:
+        <eref target="https://www.sanctumsecops.com/">https://www.sanctumsecops.com/</eref>.
+      </t>
+    </note>
+
+<note title="Source and Archival" removeInRFC="true">
       <t>
         Source maintained at
         <eref target="https://github.com/Sanc-Admin/pquip-pqc-readiness-gaps">https://github.com/Sanc-Admin/pquip-pqc-readiness-gaps</eref>.
@@ -310,6 +322,24 @@
         <seriesInfo name="FIPS" value="204"/>
       </reference>
     </references>
-  </back>
+  
+    <section anchor="acknowledgements" title="Acknowledgements">
+      <t>
+        The author thanks Mike Ounsworth (Entrust) for valuable feedback on
+        draft structure and boilerplate compliance, and the IETF PQUIP, LAMPS,
+        and OAuth working groups for their ongoing work on post-quantum
+        cryptography standardization.
+      </t>
+      <t>
+        CygnetLib (<eref target="https://github.com/sanctumsecopsmssp/CygnetLib">https://github.com/sanctumsecopsmssp/CygnetLib</eref>)
+        serves as the reference implementation for algorithms described in this
+        document. JSON evidence files including the algorithm registry, CNSA 2.0
+        compliance matrix, IETF PQC interoperability status, and ACTV test
+        vector results are available in the
+        <tt>evidence/</tt> directory of the CygnetLib repository.
+      </t>
+    </section>
+
+</back>
 
 </rfc>
