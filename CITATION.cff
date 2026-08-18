@@ -11,7 +11,7 @@ authors:
     address: "Pine City, NY, USA"
 date-released: 2026-06-05
 url: "https://datatracker.ietf.org/doc/draft-vicente-pquip-pqc-readiness-gaps/"
-repository-code: "https://github.com/Sanc-Admin/pquip-pqc-readiness-gaps"
+repository-code: "https://github.com/sanctumsecopsmssp/pquip-pqc-readiness-gaps"
 keywords:
   - post-quantum cryptography
   - PQC

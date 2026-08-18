@@ -18,14 +18,14 @@
       <organization>Sanctum SecOps LLC</organization>
       <address>
         <postal><city>Pine City</city><region>NY</region><country>United States of America</country></postal>
-        <email>brian@sso-labs.com</email>
+        <email>bvicente@sanctumsecops.com</email>
         <uri>https://orcid.org/0009-0006-6395-5308</uri>
       </address>
     </author>
 
     <date year="2026" month="August" day="16"/>
     <area>Security</area>
-    <workgroup>PQUIP</workgroup>
+    <workgroup>Post-Quantum Use In Protocols</workgroup>
     <keyword>post-quantum</keyword>
     <keyword>PQC readiness</keyword>
     <keyword>observability</keyword>
