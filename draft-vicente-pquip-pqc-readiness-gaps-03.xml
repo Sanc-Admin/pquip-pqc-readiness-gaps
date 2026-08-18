@@ -25,7 +25,7 @@
 
     <date year="2026" month="August" day="12"/>
     <area>Security</area>
-    <workgroup>PQUIP</workgroup>
+    <workgroup>Post-Quantum Use In Protocols</workgroup>
     <keyword>post-quantum</keyword>
     <keyword>PQC readiness</keyword>
     <keyword>observability</keyword>
