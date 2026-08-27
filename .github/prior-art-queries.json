@@ -1,0 +1,62 @@
+{
+  "repo": "pquip-pqc-readiness-gaps",
+  "subject": "PQC readiness observability gaps: absence of machine-readable network-layer signals for automated PQC readiness assessment, distinguished from CBOM software-composition inventory (PQUIP).",
+  "exclude_name_contains": [
+    "-vicente-"
+  ],
+  "queries": [
+    {
+      "label": "PQUIP WG adopted drafts",
+      "filters": {
+        "group__acronym": "pquip"
+      }
+    },
+    {
+      "label": "title contains 'pqc readiness'",
+      "filters": {
+        "title__icontains": "pqc readiness"
+      }
+    },
+    {
+      "label": "title contains 'post-quantum readiness'",
+      "filters": {
+        "title__icontains": "post-quantum readiness"
+      }
+    },
+    {
+      "label": "title contains 'bill of materials'",
+      "filters": {
+        "title__icontains": "bill of materials"
+      },
+      "require_title_any": [
+        "crypto",
+        "quantum",
+        "pqc"
+      ]
+    },
+    {
+      "label": "title contains 'cryptographic inventory'",
+      "filters": {
+        "title__icontains": "cryptographic inventory"
+      }
+    },
+    {
+      "label": "name contains 'cbom'",
+      "filters": {
+        "name__contains": "cbom"
+      }
+    },
+    {
+      "label": "name contains 'pquip-pqc-migration'",
+      "filters": {
+        "name__contains": "pquip-pqc-migration"
+      }
+    },
+    {
+      "label": "title contains 'crypto discovery'",
+      "filters": {
+        "title__icontains": "crypto discovery"
+      }
+    }
+  ]
+}
