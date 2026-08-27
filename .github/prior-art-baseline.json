@@ -1,0 +1,69 @@
+{
+  "seen": {
+    "draft-dev-xipher-cbom-extension": {
+      "rev": "00",
+      "title": "Output Schema Based on Cryptographic Bill of Materials (CBoM) for Post-Quantum Cryptography Usage",
+      "wg": "none",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-ietf-pquip-hbs-state": {
+      "rev": "04",
+      "title": "Hash-based Signatures: State and Backup Management",
+      "wg": "pquip",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-ietf-pquip-hybrid-signature-spectrums": {
+      "rev": "07",
+      "title": "Hybrid signature spectrums",
+      "wg": "pquip",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-ietf-pquip-pqc-engineers": {
+      "rev": "14",
+      "title": "Post-Quantum Cryptography for Engineers",
+      "wg": "pquip",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-ietf-pquip-pqc-hsm-constrained": {
+      "rev": "06",
+      "title": "Adapting Constrained Devices for Post-Quantum Cryptography",
+      "wg": "pquip",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-ietf-pquip-pqt-hybrid-terminology": {
+      "rev": "06",
+      "title": "Terminology for Post-Quantum Traditional Hybrid Schemes",
+      "wg": "pquip",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-kwiatkowski-pquip-pqc-migration": {
+      "rev": "00",
+      "title": "Guidance for migration to Post-Quantum Cryptography",
+      "wg": "none",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-ramki-ptp-hardware-rooted-attestation": {
+      "rev": "01",
+      "title": "Hardware-Rooted Attestation for Precision Time Protocol: Scalable Workload Identity and Phased PQC Readiness",
+      "wg": "none",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    },
+    "draft-wiggers-hbs-state": {
+      "rev": "02",
+      "title": "Hash-based Signatures: State and Backup Management",
+      "wg": "pquip",
+      "first_seen": "2026-08-27T19:56:10Z",
+      "last_seen_rev_at": "2026-08-27T19:56:10Z"
+    }
+  },
+  "updated": "2026-08-27T19:56:10Z",
+  "queries_source": ".github/prior-art-queries.json"
+}

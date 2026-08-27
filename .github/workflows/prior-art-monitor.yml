@@ -1,18 +1,24 @@
 name: Prior Art Monitor
 
+# Once daily (was four times a day). One rolling issue per repo, baseline-diffed
+# findings, and a hard failure if the Datatracker query is broken or over-broad.
 on:
   schedule:
-    - cron: '22 4,10,16,22 * * *'
+    - cron: '22 4 * * *'
   workflow_dispatch:
 
 permissions:
   issues: write
-  contents: read
+  contents: write
+
+concurrency:
+  group: prior-art-monitor-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   datatracker-sweep:
     name: IETF Datatracker prior-art sweep
-    runs-on: [self-hosted, linux, ARM64]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
@@ -21,50 +27,86 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: pip install requests
-
       - name: Sweep Datatracker
         id: sweep
         env:
           REPO_NAME: ${{ github.event.repository.name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PRIOR_ART_FINDINGS_JSON: ${{ runner.temp }}/prior-art-findings.json
         run: |
-          python3 - <<'EOF'
-          import requests, os
-          THREAT_MAP = {
-              "pquip-pqc-readiness-gaps": ["pqc-migration","pqc-readiness","pquip-pqc"],
-          }
-          repo = os.environ.get("REPO_NAME","unknown")
-          terms = THREAT_MAP.get(repo,[])
-          threats_found = []
-          for term in terms:
-              try:
-                  r = requests.get(f"https://datatracker.ietf.org/api/v1/doc/document/?name__contains={term}&format=json",timeout=15)
-                  if r.ok:
-                      for obj in r.json().get("objects",[]):
-                          name = obj["name"]
-                          if "draft-" in name and "vicente" not in name:
-                              threats_found.append(f"{name} (rev -{obj.get('rev','?')}, {obj.get('time','')[:10]})")
-              except Exception as e:
-                  print(f"WARN: {e}")
-          gho = os.environ.get("GITHUB_OUTPUT","")
-          if threats_found:
-              [print(f"  - {t}") for t in threats_found]
-              gho and open(gho,"a").write("threats_found=true\n")
-          else:
-              print(f"No threats for {repo}")
-              gho and open(gho,"a").write("threats_found=false\n")
-          EOF
+          set -euo pipefail
+          # Standard library only: no pip install, no network dependency beyond
+          # the Datatracker API itself.
+          export SWEEP_STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 .github/scripts/prior_art_monitor.py
 
-      - name: Open issue on threat
-        if: steps.sweep.outputs.threats_found == 'true'
+      - name: Upsert the single rolling prior-art issue
         uses: actions/github-script@v9
+        env:
+          FINDINGS: ${{ runner.temp }}/prior-art-findings.json
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner, repo: context.repo.repo,
-              title: `[PRIOR-ART] Threat — ${context.repo.repo} — ${new Date().toISOString().slice(0,10)}`,
-              body: `Datatracker sweep detected competing drafts. Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-              labels: ['prior-art','intel','action-required']
+            const fs = require('fs');
+            const findings = JSON.parse(fs.readFileSync(process.env.FINDINGS, 'utf8'));
+            const label = 'prior-art-monitor';
+            const title = `[PRIOR-ART] Datatracker monitor — ${context.repo.repo}`;
+            const { owner, repo } = context.repo;
+
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: label });
+            } catch (e) {
+              if (e.status !== 404) throw e;
+              await github.rest.issues.createLabel({
+                owner, repo, name: label, color: '0e8a16',
+                description: 'Rolling IETF Datatracker prior-art status issue (one per repo)'
+              });
+            }
+
+            // Find the one rolling issue: open, carries our label, exact title.
+            const open = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: label, per_page: 100
             });
+            const existing = open.find(i => i.title === title) || open[0];
+
+            if (existing) {
+              await github.rest.issues.update({
+                owner, repo, issue_number: existing.number,
+                title, body: findings.body
+              });
+              core.notice(`Updated rolling prior-art issue #${existing.number}`);
+              core.summary.addRaw(`Updated rolling issue #${existing.number}\n`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner, repo, title, body: findings.body, labels: [label]
+              });
+              core.notice(`Created rolling prior-art issue #${created.data.number}`);
+              core.summary.addRaw(`Created rolling issue #${created.data.number}\n`);
+            }
+            core.summary.addRaw(
+              `New drafts: ${findings.new_drafts.length}, ` +
+              `new revisions: ${findings.new_revisions.length}, ` +
+              `matched: ${findings.matched.length}\n`
+            );
+            await core.summary.write();
+
+      - name: Commit the updated baseline
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- .github/prior-art-baseline.json; then
+            echo "Baseline unchanged."
+            exit 0
+          fi
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/prior-art-baseline.json
+          git commit -m 'chore(prior-art): update Datatracker baseline [skip ci]'
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            git pull --rebase --autostash
+          done
+          echo '::error title=Prior Art Monitor::could not push the updated baseline'
+          exit 1
